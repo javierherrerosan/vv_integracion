@@ -106,4 +106,29 @@ public class TestInvalidUser {
 
     }
 	
+    @Test
+    public void testAddRemoteSystemWithInvalidUserAndSystem() throws Exception {
+        User invalidUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(invalidUser.getId())).thenReturn(null);
+        String invalidId = "012345"; // id valido de sistema
+        when(mockGenericDao.updateSomeData(null, invalidId)).thenReturn(false);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        assertThrows(com.practica.integracion.manager.SystemManagerException.class, ()->manager.addRemoteSystem(invalidUser.getId(), invalidId));
+        ordered.verify(mockAuthDao).getAuthData(invalidUser.getId());
+        ordered.verify(mockGenericDao).updateSomeData(null, invalidId);
+    }
+    @Test
+    public void testAddRemoteSystemWithInvalidUserAndValidSystem() throws Exception {
+        User invalidUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(invalidUser.getId())).thenReturn(null);
+        String validId = "012345"; // id valido de sistema
+        when(mockGenericDao.updateSomeData(null, validId)).thenReturn(false);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        assertThrows(com.practica.integracion.manager.SystemManagerException.class, ()->manager.addRemoteSystem(invalidUser.getId(), validId));
+        ordered.verify(mockAuthDao).getAuthData(invalidUser.getId());
+        ordered.verify(mockGenericDao).updateSomeData(null, validId);
+    }
+	
 }
