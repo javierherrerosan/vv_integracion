@@ -62,4 +62,47 @@ public class TestValidUser {
 		ordered.verify(mockAuthDao).getAuthData(validUser.getId());
 		ordered.verify(mockGenericDao).getSomeData(validUser, "where id=" + validId);
 	}
+	
+	 @Test
+    public void stopRemoteSystemWithValidUserAndSystem() throws SystemManagerException, OperationNotSupportedException {
+
+
+        User validUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(validUser.getId())).thenReturn(validUser);
+        String validId = "12345"; // id valido de sistema
+        ArrayList<Object> lista = new ArrayList<>(Arrays.asList("uno", "dos"));
+        when(mockGenericDao.getSomeData(validUser, "where id=" + validId)).thenReturn(lista);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        // instanciamos el manager con los mock creados
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        // llamada al api a probar
+        Collection<Object> retorno = manager.stopRemoteSystem(validUser.getId(), validId);
+        assertEquals(retorno.toString(), "[uno, dos]");
+        // vemos si se ejecutan las llamadas a los dao, y en el orden correcto
+        ordered.verify(mockAuthDao).getAuthData(validUser.getId());
+        ordered.verify(mockGenericDao).getSomeData(validUser, "where id=" + validId);
+
+    }
+
+	 @Test
+       public void stopRemoteSystemWithValidUserAndInvalidSystem() throws SystemManagerException, OperationNotSupportedException {
+
+
+        User validUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(validUser.getId())).thenReturn(validUser);
+        String invalidId = "12345"; // id valido de sistema
+        ArrayList<Object> lista = new ArrayList<>(Arrays.asList("uno", "dos"));
+        when(mockGenericDao.getSomeData(validUser, "where id=" + invalidId)).thenReturn(null);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        // instanciamos el manager con los mock creados
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        // llamada al api a probar
+        Collection<Object> retorno = manager.stopRemoteSystem(validUser.getId(), invalidId);
+        assertNull(retorno);
+        // vemos si se ejecutan las llamadas a los dao, y en el orden correcto
+        ordered.verify(mockAuthDao).getAuthData(validUser.getId());
+        ordered.verify(mockGenericDao).getSomeData(validUser, "where id=" + invalidId);
+
+    }
+
 }
