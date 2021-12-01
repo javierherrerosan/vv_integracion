@@ -130,5 +130,29 @@ public class TestInvalidUser {
         ordered.verify(mockAuthDao).getAuthData(invalidUser.getId());
         ordered.verify(mockGenericDao).updateSomeData(null, validId);
     }
+	@Test
+    public void testDeleteRemoteSystemWithInvalidUserAndSystem() throws Exception {
+        User invalidUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(invalidUser.getId())).thenReturn(null);
+        String invalidId = "012345"; // id valido de sistema
+        when(mockGenericDao.deleteSomeData(null, invalidId)).thenReturn(false);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        assertThrows(com.practica.integracion.manager.SystemManagerException.class, ()->manager.deleteRemoteSystem(invalidUser.getId(), invalidId));
+        ordered.verify(mockAuthDao).getAuthData(invalidUser.getId());
+        ordered.verify(mockGenericDao).deleteSomeData(null, invalidId);
+    }
+    @Test
+    public void testDeleteRemoteSystemWithInvalidUserAndValidSystem() throws Exception {
+        User invalidUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
+        when(mockAuthDao.getAuthData(invalidUser.getId())).thenReturn(null);
+        String validId = "012345"; // id valido de sistema
+        when(mockGenericDao.deleteSomeData(null, validId)).thenReturn(false);
+        InOrder ordered = inOrder(mockAuthDao, mockGenericDao);
+        SystemManager manager = new SystemManager(mockAuthDao, mockGenericDao);
+        assertThrows(com.practica.integracion.manager.SystemManagerException.class, ()->manager.deleteRemoteSystem(invalidUser.getId(), validId));
+        ordered.verify(mockAuthDao).getAuthData(invalidUser.getId());
+        ordered.verify(mockGenericDao).deleteSomeData(null, validId);
+    }
 	
 }
