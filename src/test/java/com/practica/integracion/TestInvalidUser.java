@@ -63,7 +63,7 @@ public class TestInvalidUser {
 	}
 	
 	 @Test
-    public void stopRemoteSystemWithInvalidUserAndSystem() throws SystemManagerException, OperationNotSupportedException {
+    public void stopRemoteSystemWithInvalidUserAndValidSystem() throws SystemManagerException, OperationNotSupportedException {
 
 
         User invalidUser = new User("1","Ana","Lopez","Madrid", new ArrayList<Object>(Arrays.asList(1, 2)));
